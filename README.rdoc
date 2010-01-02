@@ -22,7 +22,7 @@
   
 == USAGE:
 
-  use Rack::Session::Mongo { :server => 'localhost:27017/mongo_ses/sessions }
+  use Rack::Session::Mongo, { :server => 'localhost:27017/mongo_ses/sessions }
   
   where server requires the following format
   
