@@ -1,6 +1,6 @@
-== MongoRack
+== mongo_rack
 
-  Rackable mongoDB based session management
+   mongoDB session management
   
 == DESCRIPTION:
 
@@ -13,8 +13,8 @@
 
 == REQUIREMENTS:
 
-* rack V 1.0 or later
-* MongoDb + mongo ruby adapter V 0.17.1 or later
+* rack 1.0 or later
+* mongo + mongo_ext ruby adapter 0.18 or later
 
 == INSTALL:
 
@@ -30,8 +30,10 @@
   
   The server description by default will be localhost:2701/mongo_session/sessions
   
-  Other options includes pool_size ( default is 1 ) and timeout ( defaults to 1 ) for 
-  pool timeouts.
+  Other options includes: 
+  
+  pool_size ( default is 1 ) 
+  pool_timeout ( defaults to 1 )
     
 == LICENSE:
 
