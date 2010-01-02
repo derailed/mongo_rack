@@ -10,7 +10,7 @@ module Rack
       DEFAULT_OPTIONS = Abstract::ID::DEFAULT_OPTIONS.merge \
         :server       => 'localhost:27017/mongo_session/sessions',
         :pool_size    => 1,
-        :timeout      => 1.0
+        :pool_timeout => 1.0
 
       def initialize(app, options={})
         super
@@ -20,7 +20,7 @@ module Rack
         @mutex      = Mutex.new      
         @connection = ::Mongo::Connection.new( host, port,
           :pool_size => @default_options[:pool_size],
-          :timeout   => @default_options[:timeout] )
+          :timeout   => @default_options[:pool_timeout] )
         @db         = @connection.db( db_name )
         @sessions   = @db[cltn_name]
       end

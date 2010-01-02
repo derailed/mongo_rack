@@ -1,4 +1,4 @@
-# Snagged HashWithIndifferentAccess for a/s
+# Snagged HashWithIndifferentAccess for A/S
 module MongoRack
   class SessionHash < Hash
     
@@ -15,7 +15,7 @@ module MongoRack
       if key.is_a?(Symbol) && include?(key = key.to_s)
         self[key]
       else
-        super
+        nil
       end
     end
 
