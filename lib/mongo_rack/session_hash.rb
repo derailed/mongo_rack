@@ -2,20 +2,25 @@
 module MongoRack
   class SessionHash < Hash
     
+    # Need to enable users to access session using either a symbol or a string as key
+    # This call wraps hash to provide this kind of access. No default allowed here. If a key
+    # is not found nil will be returned.
     def initialize(constructor = {})
       if constructor.is_a?(Hash)
         super(constructor)
-        update(constructor)
+        update(constructor)        
+        self.default = nil        
       else
         super(constructor)
       end
     end
 
+    # Checks for default value. If key does not exits returns default for hash
     def default(key = nil)
       if key.is_a?(Symbol) && include?(key = key.to_s)
         self[key]
       else
-        nil
+        super
       end
     end
 
@@ -89,20 +94,17 @@ module MongoRack
     def merge(hash)
       self.dup.update(hash)
     end
-
-    # Performs the opposite of merge, with the keys and values from the first hash taking precedence over the second.
-    # This overloaded definition prevents returning a regular hash, if reverse_merge is called on a HashWithDifferentAccess.
-    def reverse_merge(other_hash)
-      super other_hash.with_indifferent_access
-    end
-
+    
     # Removes a specified key from the hash.
     def delete(key)
       super(convert_key(key))
     end
 
+    #:nodoc:
     def stringify_keys!; self end
+    #:nodoc:    
     def symbolize_keys!; self end
+    #:nodoc:    
     def to_options!; self end
 
     # Convert to a Hash with String keys.
@@ -110,21 +112,33 @@ module MongoRack
       Hash.new(default).merge(self)
     end
 
-    protected
+    # =========================================================================
+    private
+
+      # converts key to string if symbol    
       def convert_key(key)
         key.kind_of?(Symbol) ? key.to_s : key
       end
 
+      # check value and converts sub obj to session hash if any
       def convert_value(value)
-        value
-        # case value
-        # when Hash
-        #   value.with_indifferent_access
-        # when Array
-        #   value.collect { |e| e.is_a?(Hash) ? e.with_indifferent_access : e }
-        # else
-        #   value
-        # end
+        case value
+          when Hash
+            value.with_session_access
+          when Array
+            value.collect { |e| e.is_a?(Hash) ? e.with_session_access : e }
+          else
+            value
+        end
       end
+  end
+end
+
+module MongoRack
+  module SessionAccess
+    def with_session_access
+      hash = MongoRack::SessionHash.new( self )
+      hash
+    end
   end
 end

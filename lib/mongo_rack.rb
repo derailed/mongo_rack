@@ -5,13 +5,25 @@ require File.join( File.dirname(__FILE__), %w[mongo_rack session_hash.rb] )
 module Rack  
   module Session    
     class Mongo < Abstract::ID      
-      attr_reader :mutex, :connection, :db, :sessions
+      attr_reader :mutex, :connection, :db, :sessions #:nodoc:
       
+      # === Options for mongo_rack
+      # :server :: 
+      #   Specifies server, port, db and collection location. Defaults
+      #   to localhost:27017/mongo_session/sessions. Format must conform to
+      #   the format {host}:{port}/{database_name}/{collection_name}.
+      # :pool_size :: 
+      #   The connection socket pool size - see mongo-ruby-driver docs for settings.
+      #   Defaults to 1 connection.
+      # :pool_timeout :: 
+      #   The connection pool timeout. see mongo-ruby-driver docs for settings.
+      #   Defaults to 1 sec.
       DEFAULT_OPTIONS = Abstract::ID::DEFAULT_OPTIONS.merge \
         :server       => 'localhost:27017/mongo_session/sessions',
         :pool_size    => 1,
         :pool_timeout => 1.0
 
+      # Initializes mongo_rack. Pass in options for default override.
       def initialize(app, options={})
         super
 
@@ -24,34 +36,8 @@ module Rack
         @db         = @connection.db( db_name )
         @sessions   = @db[cltn_name]
       end
-
-      def parse_server_desc( desc )
-        tokens = desc.split( "/" )
-        raise "Invalid server description" unless tokens.size == 3
-        server_desc = tokens[0].split( ":" )
-        raise "Invalid host:port description" unless server_desc.size == 2        
-        return server_desc.first, server_desc.last.to_i, tokens[1], tokens[2]
-      end
-      
-      def generate_sid
-        loop do          
-          sid = super
-          break sid unless sessions.find_one( { :_id => sid } )
-        end
-      end
-
-      # Check session expiration date
-      def fresh?( ses_obj )
-        return true if ses_obj['expire'] == 0
-        now = Time.now
-        ses_obj['expire'] >= now        
-      end
-      
-      # Clean out all expired sessions
-      def clean_expired!
-        sessions.remove( { :expire => { '$lt' => Time.now } } )
-      end
-                  
+                    
+      # Fetch session with optional session id. Retrieve session from mongodb if any    
       def get_session( env, sid )
         return _get_session( env, sid ) unless env['rack.multithread']
         mutex.synchronize do
@@ -59,6 +45,7 @@ module Rack
         end        
       end
 
+      # Update session params and sync to mongoDB.
       def set_session( env, sid, new_session, options )
         return _set_session( env, sid, new_session, options ) unless env['rack.multithread']
         mutex.synchronize do    
@@ -69,6 +56,36 @@ module Rack
       # =======================================================================
       private
 
+        # Generates unique session id
+        def generate_sid
+          loop do          
+            sid = super
+            break sid unless sessions.find_one( { :_id => sid } )
+          end
+        end
+
+        # Check session expiration date
+        def fresh?( ses_obj )
+          return true if ses_obj['expire'] == 0
+          now = Time.now
+          ses_obj['expire'] >= now        
+        end
+      
+        # Clean out all expired sessions
+        def clean_expired!
+          sessions.remove( { :expire => { '$lt' => Time.now } } )
+        end
+
+        # parse server description string into host, port, db, cltn
+        def parse_server_desc( desc )
+          tokens = desc.split( "/" )
+          raise "Invalid server description" unless tokens.size == 3
+          server_desc = tokens[0].split( ":" )
+          raise "Invalid host:port description" unless server_desc.size == 2        
+          return server_desc.first, server_desc.last.to_i, tokens[1], tokens[2]
+        end
+
+        # fetch session with optional session id
         def _get_session(env, sid)
           if sid
             ses_obj = sessions.find_one( { :_id => sid } )
@@ -90,6 +107,7 @@ module Rack
           return [ nil, {} ]
         end
             
+        # update session information with new settings
         def _set_session(env, sid, new_session, options)
           ses_obj = sessions.find_one( { :_id => sid } )
           if ses_obj
