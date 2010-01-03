@@ -1,6 +1,6 @@
 == mongo_rack
 
-   mongoDB session management
+   mongoDB based session management
   
 == DESCRIPTION:
 
