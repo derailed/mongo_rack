@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), %w[spec_helper])
+require File.absolute_path( File.join( File.dirname(__FILE__), %w[spec_helper] ) )
 
 describe Rack::Session::Mongo do
   before :all do
@@ -181,7 +181,7 @@ describe Rack::Session::Mongo do
       drop_counter = proc do |env|
         env['rack.session'].delete 'counter'
         env['rack.session']['foo'] = 'bar'
-        [200, {'Content-Type'=>'text/plain'}, env['rack.session'].inspect]
+        [200, {'Content-Type'=>'text/plain'}, [env['rack.session'].inspect]]
       end
       tses = Rack::Utils::Context.new @pool, drop_counter
       treq = Rack::MockRequest.new( tses )
@@ -200,7 +200,7 @@ describe Rack::Session::Mongo do
       session = @pool.sessions.find_one( {:_id => sess_id } )
       session['data'].size.should == 1
       session['data']['counter'].should be_nil
-      session['data']['foo'].should == 'bar'      
+      session['data'].should == {"foo"=>"bar"}
     end
     
   end
