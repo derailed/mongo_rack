@@ -50,8 +50,7 @@ class GemPackageTask < Rake::PackageTask
     task :package => ['gem:prereqs', "#{package_dir_path}/#{gem_file}"]
     file "#{package_dir_path}/#{gem_file}" => [package_dir_path] + package_files + bones_files do
       when_writing("Creating GEM") {
-        chdir(package_dir_path) do
-puts gem_spec.inspect          
+        chdir(package_dir_path) do          
           Gem::Builder.new(gem_spec).build
           verbose(true) {
             mv gem_file, "../#{gem_file}"

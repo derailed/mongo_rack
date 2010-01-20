@@ -1,5 +1,4 @@
-require File.join(File.dirname(__FILE__), %w[spec_helper])
-require File.join(File.dirname(__FILE__), %w[.. lib core_ext hash])
+require File.expand_path(File.join(File.dirname(__FILE__), %w[spec_helper]))
 
 describe MongoRack::SessionHash do
   before :all do
