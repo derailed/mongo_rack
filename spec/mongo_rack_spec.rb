@@ -46,9 +46,11 @@ describe Rack::Session::Mongo do
       req    = Rack::MockRequest.new( @pool )
       res    = req.get("/", 'rack.multithread' => false )
       cookie = res["Set-Cookie"]
-      req.get("/", "HTTP_COOKIE" => cookie, 'rack.multithread' => false ).body.should == '{"counter"=>2}'
+      res = req.get("/", "HTTP_COOKIE" => cookie, 'rack.multithread' => false )
+      res.body.should == '{"counter"=>2}'
       mongo_check( res, :counter, 2 )
-      req.get("/", "HTTP_COOKIE" => cookie, 'rack.multithread' => false ).body.should == '{"counter"=>3}'
+      res = req.get("/", "HTTP_COOKIE" => cookie, 'rack.multithread' => false )
+      res.body.should == '{"counter"=>3}'
       mongo_check( res, :counter, 3 )    
     end
     
@@ -175,7 +177,7 @@ describe Rack::Session::Mongo do
             req.get( "/", "HTTP_COOKIE" => cookie, 'rack.multithread' => true )
           end
         end.reverse.map{ |t| t.join.value }
-        
+
         r.each do |res|
           res['Set-Cookie'].should == cookie
           res.body.should include( '"counter"=>2' )

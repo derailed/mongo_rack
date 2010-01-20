@@ -1,7 +1,7 @@
 require 'rack/session/abstract/id'
 require 'mongo'
-require File.join( File.dirname(__FILE__), %w[mongo_rack session_hash.rb] )
-require File.join( File.dirname(__FILE__), %w[core_ext hash.rb] )
+require File.expand_path( File.join( File.dirname(__FILE__), %w[mongo_rack session_hash.rb] ) )
+require File.expand_path( File.join( File.dirname(__FILE__), %w[core_ext hash.rb] ) )
 require 'yaml'
 require 'logger'
 

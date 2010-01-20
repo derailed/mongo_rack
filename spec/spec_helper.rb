@@ -4,7 +4,7 @@ require 'rack/test'
 require 'rack/response'
 require 'yaml'
 
-require File.join(File.dirname(__FILE__), %w[.. lib mongo_rack])
+require File.expand_path( File.join( File.dirname(__FILE__), %w[.. lib mongo_rack] ) )
 
 Spec::Runner.configure do |config|
 end
