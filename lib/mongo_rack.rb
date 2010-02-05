@@ -44,7 +44,7 @@ module Rack
         @db         = @connection.db( db_name )
         @sessions   = @db[cltn_name]
 
-        @logger = Logger.new( $stdout )
+        @logger = ::Logger.new( $stdout )
         @logger.level = set_log_level( @default_options[:log_level] )
       end
       
@@ -203,17 +203,17 @@ module Rack
         def set_log_level( level )
           case level
             when :fatal
-              Logger::FATAL
+              ::Logger::FATAL
             when :error
-              Logger::ERROR
+              ::Logger::ERROR
             when :warn
-              Logger::WARN
+              ::Logger::WARN
             when :info
-              Logger::INFO
+              ::Logger::INFO
             when :debug
-              Logger::DEBUG
+              ::Logger::DEBUG
             else
-              Logger::INFO
+              ::Logger::INFO
             end
         end
         

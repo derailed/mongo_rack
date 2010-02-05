@@ -1,2 +1,11 @@
 o 0.0.1 / 2009-12-31
   Initial drop
+
+o 0.0.2 / 2010-01-06
+  Bugs and cleanup
+
+o 0.0.3 / 2010-01-28
+  Bugs and cleanup
+  
+o 0.0.4 / 2010-02-04
+  Changed Logger to user global scope

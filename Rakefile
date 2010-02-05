@@ -15,7 +15,7 @@ require 'mongo_rack'
 task :default => 'spec:run'
 
 PROJ.name      = 'mongo_rack'
-PROJ.version   = "0.0.3"
+PROJ.version   = "0.0.4"
 PROJ.authors   = 'Fernand Galiana'
 PROJ.email     = 'fernand.galiana@gmail.com'
 PROJ.url       = 'http://github.com/derailed/mongo_rack'
