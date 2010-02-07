@@ -2,6 +2,7 @@ require 'rack/session/abstract/id'
 require 'mongo'
 require File.expand_path( File.join( File.dirname(__FILE__), %w[mongo_rack session_hash.rb] ) )
 require File.expand_path( File.join( File.dirname(__FILE__), %w[core_ext hash.rb] ) )
+require 'yaml'
 require 'logger'
 
 module Rack  
@@ -95,14 +96,15 @@ module Rack
           return server_desc.first, server_desc.last.to_i, tokens[1], tokens[2]
         end
         
-        # Marshal session object
+        # Marshal session object 
+        # BOZO !! Marshal will not dump valid strings for mongo - using yaml instead
         def serialize( ses )
-          Marshal.dump( ses )
+          YAML.dump( ses )
         end
         
-        # Hydrate session object
+        # Hydrate session object        
         def deserialize( buff )
-          Marshal.load( buff )
+          YAML.load( buff )
         end
         
         # fetch session with optional session id
