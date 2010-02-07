@@ -2,7 +2,6 @@ require 'rack/session/abstract/id'
 require 'mongo'
 require File.expand_path( File.join( File.dirname(__FILE__), %w[mongo_rack session_hash.rb] ) )
 require File.expand_path( File.join( File.dirname(__FILE__), %w[core_ext hash.rb] ) )
-require 'yaml'
 require 'logger'
 
 module Rack  
@@ -27,7 +26,7 @@ module Rack
         :server       => 'localhost:27017/mongo_session/sessions',
         :pool_size    => 1,
         :pool_timeout => 1.0,
-        :log_level    => :fatal
+        :log_level    => :error
 
       # Initializes mongo_rack. Pass in options for default override.
       def initialize(app, options={})
@@ -96,14 +95,14 @@ module Rack
           return server_desc.first, server_desc.last.to_i, tokens[1], tokens[2]
         end
         
-        # Use YAML to store session objects
+        # Marshal session object
         def serialize( ses )
-          YAML::dump( ses )
+          Marshal.dump( ses )
         end
         
-        # Session object stored in YAML
+        # Hydrate session object
         def deserialize( buff )
-          YAML::load( buff )
+          Marshal.load( buff )
         end
         
         # fetch session with optional session id

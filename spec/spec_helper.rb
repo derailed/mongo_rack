@@ -11,9 +11,9 @@ end
 
 def mongo_check( res, key, val )
   session_id = res['Set-Cookie'].match( /^#{@session_key}=(.*?);.*?/ )[1]
-  result     = @sessions.find_one( { :_id => session_id } )  
+  result     = @sessions.find_one( { :_id => session_id } )
   result.should_not be_nil
-  ses       = YAML.load( result['data'] )
+  ses       = Marshal.load( result['data'] )
   ses[key.to_s].should == val    
 end
 

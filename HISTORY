@@ -9,3 +9,6 @@ o 0.0.3 / 2010-01-28
   
 o 0.0.4 / 2010-02-04
   Changed Logger to user global scope
+  
+o 0.0.5 / 2010-02-07
+  Updated marshaling mechanism. This will require a full session cltn clear!

@@ -16,7 +16,12 @@ describe Rack::Session::Mongo do
       env[@session_key]['counter'] ||= 0
       env[@session_key]['counter']  += 1
       Rack::Response.new( env[@session_key].inspect ).to_a
-    end    
+    end
+    
+    # Clear out old sessions!
+    con = Mongo::Connection.new( "localhost", 27017 )
+    con.db( @db_name )[@cltn_name].remove
+    con.close
   end
 
   it "should connect to a valid server" do
@@ -223,7 +228,7 @@ describe Rack::Session::Mongo do
       sid = 10
       ses = { 'a' => 1, 'b' => 2 }
       @pool.send(:_set_session, @env, sid, ses, @opts )
-      results = @pool.send(:_get_session, @env, sid )
+      results = @pool.send(:_get_session, @env, sid )     
       results.last.should == ses
     end
     
